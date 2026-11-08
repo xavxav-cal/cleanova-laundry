@@ -24,5 +24,4 @@ const initializeDatabase = () =>
     });
   });
 
-
 module.exports = { db, initializeDatabase };
