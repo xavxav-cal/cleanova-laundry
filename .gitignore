@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Logs
 logs
 *.log
@@ -22,3 +23,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+=======
+node_modules/
+database.sqlite
+.env
+*.log
+>>>>>>> dd4430911a578070c51d2de1f40402c8ec70ee3b
