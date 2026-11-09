@@ -26,6 +26,33 @@ app.use('/api/test', testRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/auth', authRoutes);
 
+/* ========================================== */
+/* TAMBAHKAN ENDPOINT LOG AKTIVITAS DI SINI  */
+/* ========================================== */
+
+// Endpoint untuk mengambil riwayat log aktivitas
+app.get('/api/logs', (req, res) => {
+  // Perbaiki path menjadi ./src/config/database
+  const { db } = require('./src/config/database'); 
+  
+  const query = `
+    SELECT id, activity, timestamp 
+    FROM activity_logs 
+    ORDER BY id DESC 
+    LIMIT 50
+  `;
+
+  db.all(query, [], (err, rows) => {
+    if (err) {
+      console.error("Gagal ambil log:", err);
+      return res.status(500).json({ success: false, message: 'Gagal mengambil data log.' });
+    }
+    res.json({ success: true, data: rows });
+  });
+});
+
+/* ========================================== */
+
 /* 404 */
 app.use((req, res) => {
   res.status(404).json({ success: false, message: 'Endpoint tidak ditemukan' });

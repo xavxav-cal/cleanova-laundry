@@ -1,6 +1,6 @@
 const { db } = require('../config/database');
 
-// Login Admin & Catat Waktu Login
+// Login Admin & Catat Aktivitas ke activity_logs
 const login = async (req, res) => {
   const { username, password } = req.body;
   if (!username || !password) {
@@ -11,26 +11,29 @@ const login = async (req, res) => {
     if (err) return res.status(500).json({ success: false, message: 'Kesalahan database.' });
     if (!row) return res.status(401).json({ success: false, message: 'Username atau password salah!' });
 
+    // 1. Update waktu login terakhir
     const now = new Date().toISOString();
     db.run('UPDATE admins SET last_login = ? WHERE id = ?', [now, row.id]);
+
+    // 2. Catat riwayat login ke tabel activity_logs secara otomatis
+    const activityDesc = `Staf / Admin (@${row.username}) berhasil login ke sistem`;
+    db.run(
+      'INSERT INTO activity_logs (username, activity) VALUES (?, ?)',
+      [row.username, activityDesc]
+    );
 
     res.json({
       success: true,
       message: 'Login berhasil!',
-      user: { 
-        id: row.id, 
-        username: row.username, 
-        nama_lengkap: row.nama_lengkap,
-        role: row.role || 'admin'
-      }
+      user: { id: row.id, username: row.username, nama_lengkap: row.nama_lengkap, role: row.role }
     });
   });
 };
 
-// Ambil Semua Daftar Pengguna Admin & Riwayat Login
-const getAllUsers = (req, res) => {
-  db.all('SELECT id, username, nama_lengkap, role, last_login FROM admins ORDER BY id DESC', [], (err, rows) => {
-    if (err) return res.status(500).json({ success: false, message: 'Gagal mengambil data pengguna.' });
+// Ambil Semua Daftar Log Aktivitas untuk Panel Owner
+const getActivityLogs = (req, res) => {
+  db.all('SELECT id, username, activity, timestamp FROM activity_logs ORDER BY id DESC', [], (err, rows) => {
+    if (err) return res.status(500).json({ success: false, message: 'Gagal mengambil data log.' });
     res.json({ success: true, data: rows });
   });
 };

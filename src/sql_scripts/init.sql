@@ -26,5 +26,12 @@ CREATE TABLE IF NOT EXISTS admins (
   last_login DATETIME
 );
 
+CREATE TABLE IF NOT EXISTS activity_logs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT NOT NULL,
+    activity TEXT NOT NULL,
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
 INSERT OR IGNORE INTO admins (id, username, password, nama_lengkap, role) 
 VALUES (1, 'admin', '12345', 'Administrator Utama', 'owner');
